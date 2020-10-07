@@ -1,4 +1,4 @@
-import { fireEvent, queryByLabelText, queryByText, waitForElement } from '@testing-library/react';
+import { fireEvent, queryByText, waitForElement } from '@testing-library/react';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
@@ -32,20 +32,26 @@ describe('Login component tests', () => {
         const label = container.querySelector('label');
         expect(label).not.toBeInTheDocument()
     });
-    it.skip('Correctly receives input - NOT WORKING', () => {
-        const userNameInput = container.querySelectorAll('input')[0];
-        fireEvent.keyDown(userNameInput, { key: 'A', code: 'KeyA' })
-        fireEvent.keyDown(userNameInput, { key: 'B', code: 'KeyB' })
-        expect(userNameInput).toHaveValue('AB');
-    })
-    it('renders correctly status label', async () => {
+    it('renders correctly status label - invalid login', async () => {
         loginServiceSpy.mockResolvedValueOnce(false);
+        const button = queryByText(container, 'Login');
+        fireEvent.click(button!);
+        const label = await waitForElement(() =>
+            container.querySelector('label')
+        )
+        expect(label).toBeInTheDocument();
+        expect(label).toHaveTextContent('Login failed')
+        expect(loginServiceSpy).toBeCalled();
+    });
+    it('renders correctly status label - valid login', async () => {
+        loginServiceSpy.mockResolvedValueOnce(true);
         const button = container.querySelectorAll('input')[2];
         fireEvent.click(button);
         const label = await waitForElement(() =>
             container.querySelector('label')
         )
         expect(label).toBeInTheDocument();
-
+        expect(label).toHaveTextContent('Login successful')
+        expect(loginServiceSpy).toBeCalled();
     });
 });

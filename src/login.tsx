@@ -29,7 +29,6 @@ export class Login extends React.Component<{}, CredentialsState> {
             this.state.userName,
             this.state.password
         );
-        console.log('Login result ' + loginResponse);
         this.setState({
             loginAttempted: true,
             isLoggedIn: loginResponse
