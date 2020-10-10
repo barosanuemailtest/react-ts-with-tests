@@ -34,14 +34,19 @@ describe('Login component tests', () => {
     });
     it('renders correctly status label - invalid login', async () => {
         loginServiceSpy.mockResolvedValueOnce(false);
-        const button = queryByText(container, 'Login');
-        fireEvent.click(button!);
+        const inputs = container.querySelectorAll('input');
+        const loginInput = inputs[0];
+        const passwordInput = inputs[1];
+        const button = inputs[2];
+        fireEvent.change(loginInput, { target: { value: 'someUser' } });
+        fireEvent.change(passwordInput, { target: { value: 'somePass' } });
+        fireEvent.click(button);
         const label = await waitForElement(() =>
             container.querySelector('label')
         )
         expect(label).toBeInTheDocument();
         expect(label).toHaveTextContent('Login failed')
-        expect(loginServiceSpy).toBeCalled();
+        expect(loginServiceSpy).toBeCalledWith('someUser', 'somePass');
     });
     it('renders correctly status label - valid login', async () => {
         loginServiceSpy.mockResolvedValueOnce(true);
